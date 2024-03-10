@@ -3,9 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
-	"path/filepath"
 	"syscall"
 	"unsafe"
 )
@@ -47,8 +45,8 @@ func getDrives() string {
 			driveSize, err := getSizeDrive(string(drive) + ":")
 			if err == nil {
 				drives[string(drive)] = map[string]uint64{
-					"total space": driveSize[0] / 1024 / 1024 / 1024,
-					"space left":  driveSize[1] / 1024 / 1024 / 1024, // Assuming we can't get free space here (modify if possible)
+					"total_space": driveSize[0] / 1024 / 1024 / 1024,
+					"space_left":  driveSize[1] / 1024 / 1024 / 1024, // Assuming we can't get free space here (modify if possible)
 				}
 			}
 		}
@@ -60,43 +58,4 @@ func getDrives() string {
 	}
 
 	return string(jsonData)
-}
-
-func getAllFilesAndFolders(path string) ([]string, error) {
-	var allFiles []string
-
-	entries, err := ioutil.ReadDir(path)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, entry := range entries {
-		fullPath := filepath.Join(path, entry.Name())
-		if entry.IsDir() {
-			allFiles = append(allFiles, fullPath) // Add directory path
-		} else {
-			allFiles = append(allFiles, fullPath) // Add file path
-		}
-	}
-
-	return allFiles, nil
-}
-
-func main() {
-	driveLetter := "D:\\" // Adjust drive letter as needed
-	folders, err := getAllFilesAndFolders(driveLetter)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-
-	if len(folders) == 0 {
-		fmt.Println("No folders found on drive", driveLetter)
-	} else {
-		fmt.Println("Folders in", driveLetter, "drive:")
-		for _, folder := range folders {
-			fmt.Println("-", folder)
-		}
-	}
-	fmt.Println(getDrives())
 }

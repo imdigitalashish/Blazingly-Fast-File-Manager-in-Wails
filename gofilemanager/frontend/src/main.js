@@ -2,42 +2,65 @@ import './style.css';
 import './app.css';
 
 import logo from './assets/images/logo-universal.png';
-import {Greet} from '../wailsjs/go/main/App';
+import { Greet, GetAllDrives } from '../wailsjs/go/main/App';
 
-document.querySelector('#app').innerHTML = `
-    <img id="logo" class="logo">
-      <div class="result" id="result">Please enter your name below 👇</div>
-      <div class="input-box" id="input">
-        <input class="input" id="name" type="text" autocomplete="off" />
-        <button class="btn" onclick="greet()">Greet</button>
-      </div>
-    </div>
-`;
-document.getElementById('logo').src = logo;
 
-let nameElement = document.getElementById("name");
-nameElement.focus();
-let resultElement = document.getElementById("result");
 
-// Setup the greet function
-window.greet = function () {
-    // Get name
-    let name = nameElement.value;
+class Application {
+    constructor() {
 
-    // Check if the input is empty
-    if (name === "") return;
-
-    // Call App.Greet(name)
-    try {
-        Greet(name)
-            .then((result) => {
-                // Update result with data back from App.Greet()
-                resultElement.innerText = result;
-            })
-            .catch((err) => {
-                console.error(err);
-            });
-    } catch (err) {
-        console.error(err);
+        this.driveContainers = document.querySelector(".driveContainers");
+        this.main();
     }
-};
+
+    utils = {
+        getAllDrives: async () => {
+            let request = await GetAllDrives();
+            return JSON.parse(request);
+        }
+    }
+
+    main() {
+        this.utils.getAllDrives()
+            .then((res) => {
+                Object.keys(res).forEach((val) => {
+                    let driveBox = document.createElement("div");
+                    driveBox.classList.add("driveBox")
+                    let driveLetter = document.createElement("p")
+                    driveLetter.innerText = `Local Disk (${val}:)`
+                    driveBox.appendChild(driveLetter)
+
+                    let progressBar = document.createElement("div")
+                    progressBar.classList.add("progressBar");
+                    let progressBarRate = document.createElement("div")
+                    progressBarRate.classList.add("progressBarRate");
+
+                    let width = ((res[val].total_space - res[val].space_left) / res[val].total_space) 
+                    if(width > 0.8) progressBarRate.style.backgroundColor = "red";
+                    progressBarRate.style.width = (width * 200) + "px";
+                    progressBar.appendChild(progressBarRate)
+                    driveBox.appendChild(progressBar);
+
+                    let para = document.createElement("p")
+                    para.innerText = `${res[val].space_left} GB free of ${res[val].total_space} GB`
+                    driveBox.appendChild(para)
+
+                    this.driveContainers.appendChild(driveBox)
+                })
+
+
+
+
+            })
+    }
+
+}
+
+
+
+addEventListener("DOMContentLoaded", () => {
+    window.app = new Application();
+})
+
+
+
