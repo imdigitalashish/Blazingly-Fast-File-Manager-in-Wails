@@ -42,7 +42,7 @@ class Application {
                     driveBox.appendChild(progressBar);
 
                     let para = document.createElement("p")
-                    para.innerText = `${res[val].space_left} GB free of ${res[val].total_space} GB`
+                    para.innerText = `${res[val].space_left} GB freed of ${res[val].total_space} GB`
                     driveBox.appendChild(para)
 
                     this.driveContainers.appendChild(driveBox)
