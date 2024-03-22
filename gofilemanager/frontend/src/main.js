@@ -12,6 +12,8 @@ class Application {
         this.driveContainers = document.querySelector(".driveContainers");
         this.main();
         this.currentPath = [];
+
+        this.directoryList = {};
     }
 
     utils = {
@@ -22,6 +24,9 @@ class Application {
         getAllFoldersFromAPath: async (path) => {
             let request = await GetAllFolders(path);
             return JSON.parse(request);
+        },
+        changeDirectoryList: (path, data) => {
+         
         }
     }
 
@@ -49,9 +54,10 @@ class Application {
                     driveBox.dataset.drive = val;
 
                     driveBox.addEventListener("click", (e) => {
-                        let drive = e.currentTarget.dataset.drive;
+                        let drive = e.currentTarget.dataset.drive+":";
                         this.currentPath.push(drive);
-                        this.utils.getAllFoldersFromAPath(this.currentPath)
+                        console.log(this.currentPath.join("//"))
+                        this.utils.getAllFoldersFromAPath(this.currentPath.join("//"))
                             .then((res) => {
                                 console.log(res)
                             })
