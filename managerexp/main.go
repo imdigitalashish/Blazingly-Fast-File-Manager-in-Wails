@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 	"syscall"
 	"unsafe"
 )
@@ -62,8 +61,8 @@ func getDrives() string {
 	return string(jsonData)
 }
 
-func getAllFilesAndFolders(path string) ([]string, error) {
-	var allFiles []string
+func getAllFilesAndFolders(path string) ([]map[string]string, error) {
+	allFiles := []map[string]string{}
 
 	entries, err := ioutil.ReadDir(path)
 	if err != nil {
@@ -71,19 +70,22 @@ func getAllFilesAndFolders(path string) ([]string, error) {
 	}
 
 	for _, entry := range entries {
-		fullPath := filepath.Join(path, entry.Name())
+		// fullPath := filepath.Join(path, entry.Name())
+		folder_file_type := make(map[string]string)
+
 		if entry.IsDir() {
-			allFiles = append(allFiles, fullPath) // Add directory path
+			folder_file_type[entry.Name()] = "folder"
 		} else {
-			allFiles = append(allFiles, fullPath) // Add file path
+			folder_file_type[entry.Name()] = "file"
 		}
+		allFiles = append(allFiles, folder_file_type)
 	}
 
 	return allFiles, nil
 }
 
 func main() {
-	driveLetter := "D:\\" // Adjust drive letter as needed
+	driveLetter := "D" // Adjust drive letter as needed
 	folders, err := getAllFilesAndFolders(driveLetter)
 	if err != nil {
 		fmt.Println("Error:", err)

@@ -2,7 +2,7 @@ import './style.css';
 import './app.css';
 
 import logo from './assets/images/logo-universal.png';
-import { Greet, GetAllDrives } from '../wailsjs/go/main/App';
+import { Greet, GetAllDrives, GetAllFolders } from '../wailsjs/go/main/App';
 
 
 
@@ -11,11 +11,16 @@ class Application {
 
         this.driveContainers = document.querySelector(".driveContainers");
         this.main();
+        this.currentPath = [];
     }
 
     utils = {
         getAllDrives: async () => {
             let request = await GetAllDrives();
+            return JSON.parse(request);
+        },
+        getAllFoldersFromAPath: async (path) => {
+            let request = await GetAllFolders(path);
             return JSON.parse(request);
         }
     }
@@ -30,16 +35,27 @@ class Application {
                     driveLetter.innerText = `Local Disk (${val}:)`
                     driveBox.appendChild(driveLetter)
 
+
                     let progressBar = document.createElement("div")
                     progressBar.classList.add("progressBar");
                     let progressBarRate = document.createElement("div")
                     progressBarRate.classList.add("progressBarRate");
 
-                    let width = ((res[val].total_space - res[val].space_left) / res[val].total_space) 
-                    if(width > 0.8) progressBarRate.style.backgroundColor = "red";
+                    let width = ((res[val].total_space - res[val].space_left) / res[val].total_space)
+                    if (width > 0.8) progressBarRate.style.backgroundColor = "red";
                     progressBarRate.style.width = (width * 200) + "px";
                     progressBar.appendChild(progressBarRate)
                     driveBox.appendChild(progressBar);
+                    driveBox.dataset.drive = val;
+
+                    driveBox.addEventListener("click", (e) => {
+                        let drive = e.currentTarget.dataset.drive;
+                        this.currentPath.push(drive);
+                        this.utils.getAllFoldersFromAPath(this.currentPath)
+                            .then((res) => {
+                                console.log(res)
+                            })
+                    })
 
                     let para = document.createElement("p")
                     para.innerText = `${res[val].space_left} GB freed of ${res[val].total_space} GB`

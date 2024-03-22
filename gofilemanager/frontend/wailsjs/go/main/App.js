@@ -6,6 +6,10 @@ export function GetAllDrives() {
   return window['go']['main']['App']['GetAllDrives']();
 }
 
+export function GetAllFolders(arg1) {
+  return window['go']['main']['App']['GetAllFolders'](arg1);
+}
+
 export function Greet(arg1) {
   return window['go']['main']['App']['Greet'](arg1);
 }

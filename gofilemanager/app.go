@@ -29,3 +29,7 @@ func (a *App) Greet(name string) string {
 func (a *App) GetAllDrives() string {
 	return getDrives()
 }
+
+func (a *App) GetAllFolders(path string) string {
+	return getAllFilesAndFolders(path)
+}

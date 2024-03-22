@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"syscall"
 	"unsafe"
@@ -33,6 +34,31 @@ func getSizeDrive(driveLetter string) ([]uint64, error) {
 	}
 
 	return []uint64{uint64(totalBytes.QuadPart), uint64(totalFreeBytes.QuadPart)}, nil
+}
+
+func getAllFilesAndFolders(path string) string {
+	allFiles := []map[string]string{}
+
+	entries, err := ioutil.ReadDir(path)
+	if err != nil {
+		return "Error reading directory"
+	}
+
+	for _, entry := range entries {
+		// fullPath := filepath.Join(path, entry.Name())
+		folder_file_type := make(map[string]string)
+
+		if entry.IsDir() {
+			folder_file_type[entry.Name()] = "folder"
+		} else {
+			folder_file_type[entry.Name()] = "file"
+		}
+		allFiles = append(allFiles, folder_file_type)
+	}
+
+	jsonData, err := json.Marshal(allFiles)
+
+	return string(jsonData)
 }
 
 func getDrives() string {

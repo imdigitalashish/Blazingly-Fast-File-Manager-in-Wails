@@ -3,4 +3,6 @@
 
 export function GetAllDrives():Promise<string>;
 
+export function GetAllFolders(arg1:string):Promise<string>;
+
 export function Greet(arg1:string):Promise<string>;
